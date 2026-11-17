@@ -10,62 +10,78 @@
  *  Always say WHICH of these three explains your answer.
  */
 
-class Animal { name = ""; }
-class Dog extends Animal { bark() {} }
-class Cat extends Animal { meow() {} }
+class Animal {
+  name = "";
+}
+class Dog extends Animal {
+  bark() {}
+}
+class Cat extends Animal {
+  meow() {}
+}
 export {};
 
-// ─────────────────────────────────────────────────────────────────────
-// B1 — satisfies vs annotation.
-// Types of a.id, b.id, a.tags. One sentence: what's the difference?
-// ANSWER:
-//
-// ─────────────────────────────────────────────────────────────────────
+//!  ─────────────────────────────────────────────────────────────────────
+//!  B1 — satisfies vs annotation.
+//!  Types of a.id, b.id, a.tags. One sentence: what's the difference?
+//!  ANSWER:
+//!   a.id would only be number
+//!   b.id would be number and string
+//!   a.tags => string[] (to get the literl the type gotta be liter that in satisfiees)
+//!   b.tags => string[]
+//!  ─────────────────────────────────────────────────────────────────────
 namespace B1 {
   type Shape = { id: number | string; tags: string[] };
   const a = { id: 1, tags: ["x"] } satisfies Shape;
   const b: Shape = { id: 1, tags: ["x"] };
 }
 
-// ─────────────────────────────────────────────────────────────────────
-// B2 — Literal preservation depends on T.
-// Types of c.dir and c.n. Why do they differ in "literalness"?
-// ANSWER:
-//
-// ─────────────────────────────────────────────────────────────────────
+//!  ─────────────────────────────────────────────────────────────────────
+//!  B2 — Literal preservation depends on T.
+//!  Types of c.dir and c.n. Why do they differ in "literalness"?
+//!  ANSWER:
+//!  c.dir ==> 'up'
+//!  c.n ===> number (cause we compare against a type not specifically a literal type)
+//!  one of Contextual Typing rules is to get the literal types we need to check against literal types
+//!  ─────────────────────────────────────────────────────────────────────
 namespace B2 {
   const c = { dir: "up", n: 1 } satisfies { dir: "up" | "down"; n: number };
 }
 
-// ─────────────────────────────────────────────────────────────────────
-// B3 — Arrays.
-// Type of d, e, f. Explain each one.
-// ANSWER:
-//
-// ─────────────────────────────────────────────────────────────────────
+//! ─────────────────────────────────────────────────────────────────────
+//! B3 — Arrays.
+//! Type of d, e, f. Explain each one.
+//! ANSWER:
+//! d => string[]
+//! d => ("a" | "b")[][]
+//! d => ["a", "b"]
+//! ─────────────────────────────────────────────────────────────────────
+
 namespace B3 {
   const d = ["a", "b"] satisfies string[];
   const e = ["a", "b"] satisfies ("a" | "b")[];
   const f = ["a", "b"] as const satisfies readonly string[];
 }
 
-// ─────────────────────────────────────────────────────────────────────
-// B4 — Tuples.
-// Type of t1 and t2. What exactly makes them different?
-// ANSWER:
-//
-// ─────────────────────────────────────────────────────────────────────
+//! ─────────────────────────────────────────────────────────────────────
+//! B4 — Tuples.
+//! Type of t1 and t2. What exactly makes them different?
+//! ANSWER:
+//! t1 ==> [number, string] // cause we satisfies against inferred (string | number)[] and satisfies going to narrow that
+//! t2 ==> (number | string)[]
+//! ─────────────────────────────────────────────────────────────────────
 namespace B4 {
   const t1 = [1, "x"] satisfies [number, string];
   const t2 = [1, "x"] satisfies (number | string)[];
 }
 
-// ─────────────────────────────────────────────────────────────────────
-// B5 — satisfies vs as (the "real check" question).
-// Which lines error? Why?
-// ANSWER:
-//
-// ─────────────────────────────────────────────────────────────────────
+//! ─────────────────────────────────────────────────────────────────────
+//! B5 — satisfies vs as (the "real check" question).
+//! Which lines error? Why?
+//! ANSWER:
+//! x => will gets an error cause we wrote it wrong and satisfies checks for excess
+//! z => wouldn't actually give a fucl
+//! ─────────────────────────────────────────────────────────────────────
 namespace B5 {
   type Cfg = { host: string; port?: number };
   const x = { host: "a", prot: 1 } satisfies Cfg;
@@ -73,23 +89,28 @@ namespace B5 {
   const z = { host: "a", prot: 1 } as Cfg;
 }
 
-// ─────────────────────────────────────────────────────────────────────
-// B6 — Read the type from the OUTSIDE IN.
-// Does it compile? Which layer is wrong? How would you fix it?
-// ANSWER:
-//
-// ─────────────────────────────────────────────────────────────────────
+//! ─────────────────────────────────────────────────────────────────────
+//! B6 — Read the type from the OUTSIDE IN.
+//! Does it compile? Which layer is wrong? How would you fix it?
+//! ANSWER:
+//! nah it gives us an error
+//! cause we need AN OBJECT Value with key equals to THAT OBJECT
+//! like this [{id: {id: 2, name: "YD7"}}]
+//! ─────────────────────────────────────────────────────────────────────
 namespace B6 {
-  const people = [{ id: 1, name: "A" }] satisfies Array<Record<string, { id: number; name: string }>>;
+  const people = [{ id: 1, name: "A" }] satisfies Array<
+    Record<string, { id: number; name: string }>
+  >;
 }
 
-// ─────────────────────────────────────────────────────────────────────
-// B7 (EXTRA) — Array vs tuple, again, with objects (you hit this one live).
-// Types of arr[0].id and tup[0].id. Types of arr[1].id and tup[1].id.
-// Is `arr` a tuple? What is `isBanned` in each element?
-// ANSWER:
-//
-// ─────────────────────────────────────────────────────────────────────
+//! ─────────────────────────────────────────────────────────────────────
+//! B7 (EXTRA) — Array vs tuple, again, with objects (you hit this one live).
+//! Types of arr[0].id and tup[0].id. Types of arr[1].id and tup[1].id.
+//! Is `arr` a tuple? What is `isBanned` in each element?
+//! ANSWER:
+//! arr would be an array that's for sure id: string | number and isBanned: false
+//! tup would be a tuble
+//! ─────────────────────────────────────────────────────────────────────
 namespace B7 {
   type P = { id: string | number; isBanned: false };
   const arr = [
@@ -103,24 +124,28 @@ namespace B7 {
   ] satisfies [P, P];
 }
 
-// ─────────────────────────────────────────────────────────────────────
-// B8 (EXTRA) — satisfies on a function expression.
-// Type of fn, and the type of x. Then: does `bad` compile?
-// ANSWER:
-//
-// ─────────────────────────────────────────────────────────────────────
+//! ─────────────────────────────────────────────────────────────────────
+//! B8 (EXTRA) — satisfies on a function expression.
+//! Type of fn, and the type of x. Then: does `bad` compile?
+//! ANSWER:
+//! fn: (x: number) => number
+//! bad => error cause toUpperCase ain't exist on number
+//! ─────────────────────────────────────────────────────────────────────
 namespace B8 {
-  const fn = (x => x * 2) satisfies (n: number) => number;
-  const bad = (x => x.toUpperCase()) satisfies (n: number) => string;
+  const fn = ((x) => x * 2) satisfies (n: number) => number;
+  const bad = ((x) => x.toUpperCase()) satisfies (n: number) => string;
 }
 
-// ─────────────────────────────────────────────────────────────────────
-// B9 (EXTRA, nuance) — Excess-property checks need a FRESH object literal.
-// Which lines error? Why does one of them NOT error even though it
-// has an extra property?
-// ANSWER:
-//
-// ─────────────────────────────────────────────────────────────────────
+//!  ─────────────────────────────────────────────────────────────────────
+//!  B9 (EXTRA, nuance) — Excess-property checks need a FRESH object literal.
+//!  Which lines error? Why does one of them NOT error even though it
+//!  has an extra property?
+//!  ANSWER:
+//! v1 => good
+//! v2 => BAD
+//! v3 => good
+//! v4 => BAD
+//!  ─────────────────────────────────────────────────────────────────────
 namespace B9 {
   type Cfg = { host: string };
   const src = { host: "a", extra: 1 };
@@ -131,13 +156,16 @@ namespace B9 {
   const v4: Cfg = { host: "a", extra: 1 };
 }
 
-// ─────────────────────────────────────────────────────────────────────
-// B10 (EXTRA, nuance) — Annotation narrows on assignment... sometimes.
-// Which of the four `.toUpperCase()` calls compile? Explain the difference
-// between u1 and o1 (hint: what does assignment narrowing apply to?).
-// ANSWER:
-//
-// ─────────────────────────────────────────────────────────────────────
+//! ─────────────────────────────────────────────────────────────────────
+//! B10 (EXTRA, nuance) — Annotation narrows on assignment... sometimes.
+//! Which of the four `.toUpperCase()` calls compile? Explain the difference
+//! between u1 and o1 (hint: what does assignment narrowing apply to?).
+//! ANSWER:
+//! u1 => good (because it's on unmutable position)
+//! o1 => wouldn't cause it's on mutable postion
+//! o2 => would satisfy (inferred type will apply)
+//! o4 => wouldn't cause we casted to string | number
+//! ─────────────────────────────────────────────────────────────────────
 namespace B10 {
   const u1: string | number = "a";
   u1.toUpperCase();
@@ -152,12 +180,15 @@ namespace B10 {
   o3.v.toUpperCase();
 }
 
-// ─────────────────────────────────────────────────────────────────────
-// B11 (EXTRA) — The palette example (typos caught, shapes kept).
-// Which lines error? What are the types of ok.red and ok.green?
-// ANSWER:
-//
-// ─────────────────────────────────────────────────────────────────────
+//! ─────────────────────────────────────────────────────────────────────
+//! B11 (EXTRA) — The palette example (typos caught, shapes kept).
+//! Which lines error? What are the types of ok.red and ok.green?
+//! ANSWER:
+//! ok.red => tuble
+//! ok.green =>string
+//! typo => blue written wrong
+//! missing for excess type check
+//! ─────────────────────────────────────────────────────────────────────
 namespace B11 {
   type Colors = "red" | "green" | "blue";
   type RGB = [number, number, number];
@@ -183,12 +214,13 @@ namespace B11 {
   ok.green.toUpperCase();
 }
 
-// ─────────────────────────────────────────────────────────────────────
-// B12 (EXTRA) — satisfies with a union as T (discriminated union).
-// Types of k.kind and k.v. Does `k2` compile? Why / why not?
-// ANSWER:
-//
-// ─────────────────────────────────────────────────────────────────────
+//! ─────────────────────────────────────────────────────────────────────
+//! B12 (EXTRA) — satisfies with a union as T (discriminated union).
+//! Types of k.kind and k.v. Does `k2` compile? Why / why not?
+//! ANSWER:
+//! k.kind => 'a', k.v => number
+//! k2 => error cause on that part of kind === 'a' v is number not string
+//! ─────────────────────────────────────────────────────────────────────
 namespace B12 {
   type Msg = { kind: "a"; v: number } | { kind: "b"; v: string };
   const k = { kind: "a", v: 1 } satisfies Msg;
