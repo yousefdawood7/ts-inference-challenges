@@ -9,5 +9,13 @@
     "noUnusedLocals": false,
     "noUnusedParameters": false
   },
-  "include": ["*.ts"]
+  "include": [
+    "*.ts",
+    "src/inference-challenges/part-a-contextual-typing.ts",
+    "src/inference-challenges/part-b-satisfies.ts",
+    "src/inference-challenges/part-c-inference-candidates.ts",
+    "src/inference-challenges/part-d-variance.ts",
+    "src/inference-challenges/part-e-controlling-inference.ts",
+    "src/inference-challenges/part-f-boss-level.ts"
+  ]
 }
